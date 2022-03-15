@@ -18,6 +18,9 @@ Node::Node() {
         st.insert(identifier);
     }else{
         identifier+=2;
+        int mod = pow(2,M);
+        identifier%=mod;
+        st.insert(identifier);
     }
     fillFTStart();
     primary = nullptr;
@@ -127,7 +130,7 @@ void Node::init_finger_table(Node *n_prime) {
     ////
     update_succ_pred_FT();
     ////
-    cout<<"id: "<<identifier<<" successor: "<<successor_ptr->identifier<<" predecessor: "<<predecessor->identifier <<endl;
+    // cout<<"id: "<<identifier<<" successor: "<<successor_ptr->identifier<<" predecessor: "<<predecessor->identifier <<endl;
     
     for(int i = 0; i < M-1; i++){
         if((finger[i+1].start >= identifier) && (finger[i+1].start < finger[i].node->identifier)){
@@ -140,7 +143,7 @@ void Node::init_finger_table(Node *n_prime) {
                 finger[i+1].node = this;
             }
             ////////////
-            cout <<"start: "<<finger[i+1].start <<", found succ:"<<finger[i+1].node->identifier <<endl;
+            // cout <<"start: "<<finger[i+1].start <<", found succ:"<<finger[i+1].node->identifier <<endl;
         }
     }
 }
@@ -150,17 +153,25 @@ void Node::init_finger_table(Node *n_prime) {
  */
 void Node::update_succ_pred_FT(){
     // update predecessor's table
+    Node* p = predecessor;
+    Node* s = successor_ptr;
+    if(p->successor_ptr->identifier > pow(2,M))
+        p->successor_ptr = p->predecessor;
+    if(s->successor_ptr->identifier > pow(2,M))
+        s->successor_ptr = s->predecessor;
     for(int i = 0; i < M; i++){
-        Node* p = predecessor;
-        if(p->finger[i].start <= identifier && identifier < p->finger[i].node->identifier){
-            p->finger[i].node = this;
+        // cout <<"I am:"<<p->identifier<<" P:"<<p->predecessor->identifier<<" S:"<<p->successor_ptr->identifier<<endl;
+        if((p->finger[i].start <= p->successor_ptr->identifier && p->successor_ptr->identifier < p->finger[i].node->identifier)){
+            p->finger[i].node = p->successor_ptr;
+        }
+        if(p->finger[i].start <= p->successor_ptr->identifier && p->finger[i].start > p->identifier){
+            p->finger[i].node = p->successor_ptr;
         }
     }
     // update successor's table
-    Node* p = successor_ptr;
     for(int i = 0; i < M; i++){
-        if(p->finger[i].start <= identifier && identifier > p->finger[i].node->identifier){
-            p->finger[i].node = this;
+        if(s->finger[i].start <= s->predecessor->identifier && s->predecessor->identifier < s->finger[i].node->identifier){
+            s->finger[i].node = s->predecessor;
         }
     } 
 }
@@ -212,9 +223,13 @@ void Node::fillFTStart(){
     }
 }
 
+/*
+ * print node finger table
+ */
 void Node::print_finger_table(){
     cout << "\n#### IP:"<<ip_address<<" | id:"<<identifier<<" ####"<<endl;
     for(int i =0; i< M; i++){
         cout << "#"<<i+1<<": "<<"Start:"<<finger[i].start<<" interval:["<<finger[i].interval.first<<","<<finger[i].interval.second<<")"<<" Succ_id: "<<finger[i].node->getIdentifier()<<endl;
     }
+    cout <<"Successor: " <<successor->identifier<<" Predecessor: "<<predecessor->identifier<<endl;
 }

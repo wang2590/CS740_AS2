@@ -4,7 +4,7 @@
 #include <string>
 #include <utility>
 
-#define M 5 // 6
+#define M 7 // picked identifier/key bit length
 #define IPV4_SIZE 32
 #define MOD 300
 

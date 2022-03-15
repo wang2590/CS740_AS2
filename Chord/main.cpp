@@ -9,12 +9,12 @@ int main() {
 
     Node j;
     j.join(nullptr);
-    int num = 3; // 32
+    int num = 32; // 32 nodes to be joined
     Node joinNodes[num];
     for(int i = 0; i < num; i++){ 
         joinNodes[i].join(&j);
     }
-    cout << "initial node";
+    cout << "\ninitial node";
     j.print_finger_table();
     
     for(int i = 0; i < num; i++){ 
